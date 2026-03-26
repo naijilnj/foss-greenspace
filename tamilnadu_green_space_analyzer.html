@@ -1,0 +1,391 @@
+
+<style>
+  :root { --green: #3B6D11; --green-light: #EAF3DE; --green-mid: #639922; --amber: #BA7517; --red-zone: #E24B4A; --blue-rec: #185FA5; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); background: transparent; }
+  .app { padding: 1rem 0; }
+  .header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+  .logo { width: 36px; height: 36px; background: var(--green-light); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; }
+  .logo svg { width: 20px; height: 20px; }
+  .header h1 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .header p { font-size: 13px; color: var(--color-text-secondary); }
+  .controls { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 1.5rem; align-items: end; }
+  .control-group label { display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  select { width: 100%; }
+  .analyze-btn { background: var(--green-mid); color: #fff; border: none; border-radius: var(--border-radius-md); padding: 9px 20px; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; height: 36px; }
+  .analyze-btn:hover { background: var(--green); }
+  .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px; }
+  .metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .metric-unit { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .metric-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; margin-top: 4px; }
+  .badge-good { background: var(--green-light); color: var(--green); }
+  .badge-warn { background: #FAEEDA; color: var(--amber); }
+  .badge-bad { background: #FCEBEB; color: var(--red-zone); }
+  .main-content { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-bottom: 1.5rem; }
+  .map-container { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); overflow: hidden; position: relative; height: 380px; }
+  .map-canvas { width: 100%; height: 100%; }
+  .map-legend { position: absolute; bottom: 12px; left: 12px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; font-size: 11px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; color: var(--color-text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .sidebar { display: flex; flex-direction: column; gap: 12px; }
+  .panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; }
+  .panel h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .zone-list { display: flex; flex-direction: column; gap: 8px; }
+  .zone-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); }
+  .zone-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .zone-name { font-size: 13px; color: var(--color-text-primary); flex: 1; }
+  .zone-score { font-size: 12px; font-weight: 500; }
+  .bar-row { margin-bottom: 10px; }
+  .bar-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .bar-track { background: var(--color-background-secondary); border-radius: 99px; height: 6px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s ease; }
+  .rec-list { display: flex; flex-direction: column; gap: 8px; }
+  .rec-item { padding: 10px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); }
+  .rec-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .rec-desc { font-size: 12px; color: var(--color-text-secondary); }
+  .rec-tag { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 99px; margin-top: 5px; }
+  .tag-park { background: var(--green-light); color: var(--green); }
+  .tag-corridor { background: #E6F1FB; color: #185FA5; }
+  .tag-tree { background: #EAF3DE; color: #3B6D11; }
+  .ai-section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; }
+  .ai-section h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px; }
+  .ai-output { font-size: 14px; color: var(--color-text-primary); line-height: 1.7; white-space: pre-wrap; min-height: 80px; }
+  .ai-loading { color: var(--color-text-secondary); font-size: 13px; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .ai-ask-btn { background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 7px 14px; font-size: 13px; color: var(--color-text-primary); cursor: pointer; margin-top: 10px; }
+  .ai-ask-btn:hover { background: var(--color-background-secondary); }
+  .progress-ring { display: inline-block; position: relative; width: 80px; height: 80px; }
+  .ring-svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--color-background-secondary); stroke-width: 8; }
+  .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .ring-val { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+  .ring-sub { font-size: 9px; color: var(--color-text-secondary); }
+  .score-row { display: flex; align-items: center; gap: 16px; }
+  .score-labels { flex: 1; }
+  .score-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--color-text-secondary); font-size: 13px; gap: 8px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 1rem; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 0; }
+  .tab { padding: 7px 14px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); font-weight: 500; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  @media (max-width: 700px) { .main-content { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: repeat(2,1fr); } .controls { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<div class="app">
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="8" fill="#3B6D11" opacity="0.15"/>
+        <path d="M10 14V9" stroke="#3B6D11" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M7 11c0-2 1.5-4 3-5 1.5 1 3 3 3 5H7z" fill="#639922"/>
+        <path d="M5 13c0-1.5 1-3 2.5-3.5" stroke="#3B6D11" stroke-width="1" stroke-linecap="round"/>
+        <path d="M15 13c0-1.5-1-3-2.5-3.5" stroke="#3B6D11" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Green Space Analyzer — Tamil Nadu</h1>
+      <p>Open-source urban green infrastructure planning tool</p>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>City</label>
+      <select id="citySelect">
+        <option value="">Select a city...</option>
+        <option value="Chennai">Chennai</option>
+        <option value="Coimbatore">Coimbatore</option>
+        <option value="Madurai">Madurai</option>
+        <option value="Tiruchirappalli">Tiruchirappalli</option>
+        <option value="Salem">Salem</option>
+        <option value="Tirunelveli">Tirunelveli</option>
+        <option value="Vellore">Vellore</option>
+        <option value="Erode">Erode</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Analysis type</label>
+      <select id="analysisType">
+        <option value="full">Full analysis</option>
+        <option value="parks">Parks &amp; recreation</option>
+        <option value="corridors">Green corridors</option>
+        <option value="access">Accessibility gaps</option>
+      </select>
+    </div>
+    <button class="analyze-btn" id="analyzeBtn" onclick="runAnalysis()">Analyze</button>
+  </div>
+
+  <div id="metricsRow" class="metrics-grid" style="display:none"></div>
+
+  <div id="mainContent" class="main-content" style="display:none">
+    <div class="map-container">
+      <canvas class="map-canvas" id="mapCanvas"></canvas>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3B6D11"></div>Existing green</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Underserved zone</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#185FA5"></div>Recommended site</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>Dense urban area</div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="panel">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('zones',this)">Zones</div>
+          <div class="tab" onclick="switchTab('score',this)">Score</div>
+        </div>
+        <div id="tab-zones" class="tab-content active">
+          <div id="zoneList" class="zone-list"></div>
+        </div>
+        <div id="tab-score" class="tab-content">
+          <div id="scoreContent"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Recommendations</h3>
+        <div id="recList" class="rec-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="chartsRow" style="display:none; margin-bottom:1.5rem;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="panel">
+        <h3>Green cover breakdown</h3>
+        <div style="position:relative;height:200px;"><canvas id="chart1"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Area comparison (ha)</h3>
+        <div style="position:relative;height:200px;"><canvas id="chart2"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="aiSection" class="ai-section" style="display:none">
+    <h3>AI planning insights</h3>
+    <div class="ai-output" id="aiOutput"></div>
+    <button class="ai-ask-btn" id="aiDeepBtn" style="display:none" onclick="deepAI()">Ask for detailed strategy ↗</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const CITY_DATA = {
+  Chennai: { pop: 10971108, area: 17600, greenArea: 1232, parks: 182, forests: 3, waterBodies: 19,
+    zones: [{name:'T. Nagar',score:28,type:'bad'},{name:'Adyar',score:52,type:'warn'},{name:'Anna Nagar',score:47,type:'warn'},{name:'Guindy',score:61,type:'good'},{name:'Perambur',score:19,type:'bad'}],
+    recs:[{title:'Perambur industrial corridor',desc:'Convert vacant lots into linear green corridor',tag:'corridor'},{title:'T. Nagar pocket parks',desc:'7 identified vacant plots for pocket parks',tag:'park'},{title:'Adyar riverbank trees',desc:'Plant 5,000 trees along Adyar riverfront',tag:'tree'}]
+  },
+  Coimbatore: { pop: 2151466, area: 24600, greenArea: 2952, parks: 94, forests: 12, waterBodies: 11,
+    zones:[{name:'Gandhipuram',score:31,type:'bad'},{name:'R.S.Puram',score:58,type:'warn'},{name:'Peelamedu',score:72,type:'good'},{name:'Saibaba Colony',score:55,type:'warn'},{name:'Podanur',score:67,type:'good'}],
+    recs:[{title:'Noyyal riverbank restoration',desc:'Green buffer along Noyyal river, 12km stretch',tag:'corridor'},{title:'Gandhipuram urban forest',desc:'Convert 3 identified plots into mini-forests',tag:'park'},{title:'Industrial zone tree cover',desc:'Mandatory tree planting in SIDCO zones',tag:'tree'}]
+  },
+  Madurai: { pop: 1561129, area: 14765, greenArea: 1180, parks: 67, forests: 5, waterBodies: 7,
+    zones:[{name:'North Madurai',score:22,type:'bad'},{name:'Tallakulam',score:44,type:'warn'},{name:'K.K.Nagar',score:49,type:'warn'},{name:'Anna Nagar',score:55,type:'warn'},{name:'Thirunagar',score:38,type:'bad'}],
+    recs:[{title:'Vaigai riverfront park',desc:'Linear park along 6km of Vaigai riverbank',tag:'park'},{title:'Old Town green necklace',desc:'Series of pocket parks in old city core',tag:'park'},{title:'NH stretch tree planting',desc:'Avenue trees along NH-38 entry corridors',tag:'tree'}]
+  },
+  Tiruchirappalli: { pop: 1021717, area: 16733, greenArea: 2342, parks: 71, forests: 8, waterBodies: 14,
+    zones:[{name:'Srirangam',score:61,type:'good'},{name:'Ariyamangalam',score:33,type:'bad'},{name:'Thiruverumbur',score:41,type:'warn'},{name:'Puthur',score:57,type:'warn'},{name:'Woraiyur',score:29,type:'bad'}],
+    recs:[{title:'Cauvery floodplain greening',desc:'Restore native vegetation on floodplains',tag:'corridor'},{title:'Woraiyur neighbourhood parks',desc:'4 sites identified for new parks',tag:'park'},{title:'Rock Fort buffer greenery',desc:'Heritage zone tree plantation',tag:'tree'}]
+  },
+  Salem: { pop: 981086, area: 9196, greenArea: 965, parks: 44, forests: 6, waterBodies: 5,
+    zones:[{name:'Fairlands',score:48,type:'warn'},{name:'Shevapet',score:21,type:'bad'},{name:'Suramangalam',score:55,type:'warn'},{name:'Kondalampatti',score:63,type:'good'},{name:'Ammapettai',score:32,type:'bad'}],
+    recs:[{title:'Shevapet linear park',desc:'Transform drainage canal banks into greenway',tag:'corridor'},{title:'Mettur road corridor',desc:'Dense tree canopy on 8km arterial road',tag:'tree'},{title:'Veerapandi landfill park',desc:'Convert legacy landfill into ecological park',tag:'park'}]
+  },
+  Tirunelveli: { pop: 901668, area: 18880, greenArea: 2643, parks: 55, forests: 9, waterBodies: 8,
+    zones:[{name:'Melapalayam',score:35,type:'bad'},{name:'Palayamkottai',score:62,type:'good'},{name:'Nanguneri',score:71,type:'good'},{name:'Sankarankovil',score:44,type:'warn'},{name:'Ambasamudram',score:58,type:'warn'}],
+    recs:[{title:'Tamirabarani greening',desc:'Riparian buffer restoration, 15km stretch',tag:'corridor'},{title:'Melapalayam parks network',desc:'Connect 3 existing parks with green links',tag:'corridor'},{title:'Urban forest — Palayamkottai',desc:'30ha urban forest on government land',tag:'park'}]
+  },
+  Vellore: { pop: 523013, area: 8735, greenArea: 742, parks: 31, forests: 4, waterBodies: 6,
+    zones:[{name:'Kosapet',score:18,type:'bad'},{name:'Sathuvachari',score:45,type:'warn'},{name:'Katpadi',score:39,type:'bad'},{name:'Gandhi Nagar',score:52,type:'warn'},{name:'Bagayam',score:61,type:'good'}],
+    recs:[{title:'Palar riverbank park',desc:'Floodplain park on Palar left bank',tag:'park'},{title:'Fort area heritage garden',desc:'Restore and expand fort moat greenery',tag:'park'},{title:'Kosapet green network',desc:'Series of tree-lined streets and plots',tag:'tree'}]
+  },
+  Erode: { pop: 657856, area: 9248, greenArea: 1018, parks: 38, forests: 5, waterBodies: 7,
+    zones:[{name:'Brough Road',score:24,type:'bad'},{name:'Veerappanchatiram',score:49,type:'warn'},{name:'Thindal',score:66,type:'good'},{name:'Chithode',score:43,type:'warn'},{name:'Perundurai',score:37,type:'bad'}],
+    recs:[{title:'Cauvery-Bhavani confluence park',desc:'Ecological reserve at river confluence',tag:'park'},{title:'Brough Road greening',desc:'Emergency tree planting in heat island zone',tag:'tree'},{title:'Textile zone corridors',desc:'Green buffers between industrial clusters',tag:'corridor'}]
+  }
+};
+
+let chart1Inst, chart2Inst, currentCity = null;
+
+function getZoneColor(type){ return type==='good'?'#3B6D11':type==='warn'?'#BA7517':'#E24B4A'; }
+function getZoneLabel(type){ return type==='good'?'Adequate':type==='warn'?'Marginal':'Underserved'; }
+
+function calcMetrics(d){
+  const greenPct = (d.greenArea/d.area*100).toFixed(1);
+  const perCapita = (d.greenArea*10000/d.pop).toFixed(1);
+  const whoStd = 9; // m² per person WHO standard
+  const susScore = Math.min(100, Math.round((parseFloat(greenPct)/15*40)+(parseFloat(perCapita)/whoStd*40)+(d.parks/300*20)));
+  return { greenPct, perCapita, susScore };
+}
+
+function runAnalysis(){
+  const city = document.getElementById('citySelect').value;
+  if(!city){ alert('Please select a city.'); return; }
+  currentCity = city;
+  const d = CITY_DATA[city];
+  const m = calcMetrics(d);
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('analyzeBtn').textContent = 'Analyzing...';
+  setTimeout(()=>{
+    renderMetrics(d, m);
+    renderMap(d, city);
+    renderSidebar(d);
+    renderCharts(d, m);
+    renderAI(city, d, m);
+    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('analyzeBtn').textContent = 'Analyze';
+  }, 600);
+}
+
+function renderMetrics(d, m){
+  const row = document.getElementById('metricsRow');
+  row.style.display = 'grid';
+  const gcBadge = parseFloat(m.greenPct)>=15?'badge-good':parseFloat(m.greenPct)>=8?'badge-warn':'badge-bad';
+  const pcBadge = parseFloat(m.perCapita)>=9?'badge-good':parseFloat(m.perCapita)>=4?'badge-warn':'badge-bad';
+  const scBadge = m.susScore>=65?'badge-good':m.susScore>=40?'badge-warn':'badge-bad';
+  row.innerHTML = `
+    <div class="metric-card"><div class="metric-label">Green cover</div><div class="metric-value">${m.greenPct}<span style="font-size:14px">%</span></div><div class="metric-unit">${(d.greenArea/100).toFixed(0)} km² of ${(d.area/100).toFixed(0)} km²</div><span class="metric-badge ${gcBadge}">${parseFloat(m.greenPct)>=15?'Meets target':parseFloat(m.greenPct)>=8?'Below target':'Critical'}</span></div>
+    <div class="metric-card"><div class="metric-label">Green space per capita</div><div class="metric-value">${m.perCapita}<span style="font-size:14px">m²</span></div><div class="metric-unit">WHO target: 9 m²/person</div><span class="metric-badge ${pcBadge}">${parseFloat(m.perCapita)>=9?'Above WHO':'Below WHO'}</span></div>
+    <div class="metric-card"><div class="metric-label">Parks &amp; reserves</div><div class="metric-value">${d.parks + d.forests}</div><div class="metric-unit">${d.parks} parks · ${d.forests} forest patches</div><span class="metric-badge badge-warn">${d.waterBodies} water bodies</span></div>
+    <div class="metric-card"><div class="metric-label">Sustainability score</div><div class="metric-value">${m.susScore}<span style="font-size:14px">/100</span></div><div class="metric-unit">Composite index</div><span class="metric-badge ${scBadge}">${m.susScore>=65?'Good':m.susScore>=40?'Moderate':'Poor'}</span></div>
+  `;
+}
+
+function renderMap(d, city){
+  document.getElementById('mainContent').style.display = 'grid';
+  const canvas = document.getElementById('mapCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * devicePixelRatio;
+  canvas.height = canvas.offsetHeight * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  ctx.clearRect(0,0,W,H);
+  const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  ctx.fillStyle = isDark?'#1a1f1a':'#f4f7f0';
+  ctx.fillRect(0,0,W,H);
+  const rng = mulberry32(city.charCodeAt(0)*31+city.charCodeAt(1));
+  function mulberry32(a){ return ()=>{ a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296; }; }
+  const gridW=8, gridH=6, cW=W/gridW, cH=H/gridH;
+  const greenPct = parseFloat(calcMetrics(d).greenPct)/100;
+  for(let r=0;r<gridH;r++) for(let c=0;c<gridW;c++){
+    const v=rng(); let color;
+    if(v<greenPct*1.2) color=isDark?'#27500A':'#C0DD97';
+    else if(v<greenPct*1.2+0.25) color=isDark?'#3C3489':'#B5D4F4';
+    else if(v<greenPct*1.2+0.45) color=isDark?'#501313':'#F7C1C1';
+    else color=isDark?'#2C2C2A':'#D3D1C7';
+    ctx.fillStyle=color;
+    ctx.beginPath(); ctx.roundRect(c*cW+2,r*cH+2,cW-4,cH-4,4); ctx.fill();
+  }
+  for(let i=0;i<6;i++){
+    const x=rng()*W*0.8+W*0.1, y=rng()*H*0.8+H*0.1;
+    ctx.fillStyle=isDark?'#3B6D11':'#639922'; ctx.globalAlpha=0.9;
+    ctx.beginPath(); ctx.arc(x,y,6+rng()*8,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha=0.7;
+  for(let i=0;i<3;i++){
+    const x=rng()*W*0.8+W*0.1, y=rng()*H*0.8+H*0.1;
+    ctx.fillStyle='#E24B4A';
+    ctx.beginPath(); ctx.arc(x,y,5+rng()*6,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  ctx.fillStyle=isDark?'#eee':'#222'; ctx.font='12px sans-serif'; ctx.fillText(city,12,22);
+}
+
+function renderSidebar(d){
+  const zl = document.getElementById('zoneList');
+  zl.innerHTML = d.zones.map(z=>`
+    <div class="zone-item">
+      <div class="zone-dot" style="background:${getZoneColor(z.type)}"></div>
+      <div class="zone-name">${z.name}</div>
+      <span class="zone-score" style="color:${getZoneColor(z.type)}">${z.score}/100</span>
+    </div>`).join('');
+  const sc = document.getElementById('scoreContent');
+  const m = calcMetrics(d);
+  const circ = 2*Math.PI*32;
+  const pct = m.susScore/100;
+  const sColor = m.susScore>=65?'#3B6D11':m.susScore>=40?'#BA7517':'#E24B4A';
+  sc.innerHTML = `<div class="score-row">
+    <div class="progress-ring">
+      <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+        <circle class="ring-bg" cx="40" cy="40" r="32"/>
+        <circle class="ring-fill" cx="40" cy="40" r="32" stroke="${sColor}" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct)}"/>
+      </svg>
+      <div class="ring-center"><div class="ring-val">${m.susScore}</div><div class="ring-sub">score</div></div>
+    </div>
+    <div class="score-labels">
+      ${[['Green cover',Math.min(100,parseFloat(m.greenPct)/15*100),'#3B6D11'],['Per capita',Math.min(100,parseFloat(m.perCapita)/9*100),'#185FA5'],['Park density',Math.min(100,d.parks/200*100),'#BA7517']].map(([l,v,c])=>`
+        <div class="bar-row">
+          <div class="bar-label"><span style="font-size:12px;color:var(--color-text-secondary)">${l}</span><span style="font-size:12px;font-weight:500">${Math.round(v)}%</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${v}%;background:${c}"></div></div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+  const rl = document.getElementById('recList');
+  rl.innerHTML = d.recs.map(r=>`<div class="rec-item"><div class="rec-title">${r.title}</div><div class="rec-desc">${r.desc}</div><span class="rec-tag tag-${r.tag}">${r.tag==='park'?'New park':r.tag==='corridor'?'Green corridor':'Tree planting'}</span></div>`).join('');
+}
+
+function renderCharts(d, m){
+  document.getElementById('chartsRow').style.display='block';
+  if(chart1Inst) chart1Inst.destroy();
+  if(chart2Inst) chart2Inst.destroy();
+  const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const txtColor = isDark?'#aaa':'#666';
+  chart1Inst = new Chart(document.getElementById('chart1'),{
+    type:'doughnut',
+    data:{labels:['Green area','Built area','Other open'],datasets:[{data:[d.greenArea, d.area*0.55, d.area-d.greenArea-d.area*0.55], backgroundColor:['#3B6D11','#888780','#B4B2A9'], borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'65%'}
+  });
+  chart2Inst = new Chart(document.getElementById('chart2'),{
+    type:'bar',
+    data:{
+      labels:['Green','Parks','Forest','Water'],
+      datasets:[{data:[d.greenArea/100, d.parks*1.2, d.forests*20, d.waterBodies*15], backgroundColor:['#3B6D11','#639922','#97C459','#185FA5'], borderWidth:0, borderRadius:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:txtColor,font:{size:11}},grid:{display:false}},y:{ticks:{color:txtColor,font:{size:11}},grid:{color:isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)'}}}}
+  });
+}
+
+async function renderAI(city, d, m){
+  const sec = document.getElementById('aiSection');
+  const out = document.getElementById('aiOutput');
+  sec.style.display='block';
+  out.innerHTML='<span class="ai-loading">Generating planning insights...</span>';
+  try {
+    const prompt = `You are an urban planning expert for Tamil Nadu. Given this city data, provide 3-4 concise, actionable planning insights (no headers, plain paragraph format):
+
+City: ${city}
+Population: ${d.pop.toLocaleString()}
+Total area: ${(d.area/100).toFixed(0)} km²
+Green area: ${(d.greenArea/100).toFixed(0)} km² (${m.greenPct}%)
+Green space per capita: ${m.perCapita} m² (WHO standard: 9 m²)
+Number of parks: ${d.parks}
+Sustainability score: ${m.susScore}/100
+Top underserved zones: ${d.zones.filter(z=>z.type==='bad').map(z=>z.name).join(', ')}
+
+Keep insights specific, data-driven, and under 180 words total. Focus on the most impactful interventions.`;
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const text = data.content?.find(b=>b.type==='text')?.text || 'Could not generate insights.';
+    out.textContent = text;
+    document.getElementById('aiDeepBtn').style.display='inline-block';
+  } catch(e){
+    out.textContent = 'Could not connect to AI service. Showing static analysis only.';
+  }
+}
+
+function deepAI(){
+  if(!currentCity) return;
+  sendPrompt(`Give me a detailed 5-year green space master plan for ${currentCity}, Tamil Nadu. Include phased implementation, estimated costs, policy recommendations, and community engagement strategies.`);
+}
+
+function switchTab(id, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+</script>

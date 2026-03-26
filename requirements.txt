@@ -1,0 +1,13 @@
+osmnx
+geopandas
+requests
+streamlit
+folium
+streamlit-folium
+shapely
+pyproj
+rtree
+pandas
+numpy
+fastapi
+uvicorn
