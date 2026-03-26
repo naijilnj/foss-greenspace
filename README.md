@@ -791,7 +791,4 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE) fi
 
 ## Project Stats
 
-- Stars: [GitHub](https://github.com/yourusername/greenspace_foss)
-- Forks: [GitHub](https://github.com/yourusername/greenspace_foss)
-- Contributors: 5+
 - Last Updated: March 2026
