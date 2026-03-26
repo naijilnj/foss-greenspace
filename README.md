@@ -1,8 +1,6 @@
 # 🌳 GreenGrid TN — Open Urban Green-space Intelligence Platform
 
-> *An open-source platform for analyzing and recommending green-space improvements in Tamil Nadu cities using real OpenStreetMap data, interactive maps, and AI-powered insights.*
-
-**Status:** Production-Ready | **License:** MIT | **Latest Version:** 0.1.0
+An open-source platform for analyzing and recommending green-space improvements in Tamil Nadu cities using real OpenStreetMap data, interactive maps, and AI-powered insights.
 
 ---
 
