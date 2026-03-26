@@ -4,7 +4,7 @@ An open-source platform for analyzing and recommending green-space improvements 
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 - [Problem & Solution](#problem--solution)
 - [Features](#features)
 - [Quick Start](#quick-start)
@@ -21,7 +21,7 @@ An open-source platform for analyzing and recommending green-space improvements 
 
 ---
 
-## 🎯 Problem & Solution
+## Problem & Solution
 
 ### The Challenge
 Tamil Nadu's rapidly urbanizing cities face critical green-space deficits:
