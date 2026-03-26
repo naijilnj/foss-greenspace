@@ -1,6 +1,6 @@
 # 🌳 GreenGrid TN — Open Urban Green-space Intelligence Platform
 
-> *A comprehensive open-source platform for analyzing and recommending green-space improvements in Tamil Nadu cities using real OpenStreetMap data, interactive maps, and AI-powered insights.*
+> *An open-source platform for analyzing and recommending green-space improvements in Tamil Nadu cities using real OpenStreetMap data, interactive maps, and AI-powered insights.*
 
 **Status:** Production-Ready | **License:** MIT | **Latest Version:** 0.1.0
 
@@ -47,7 +47,7 @@ Tamil Nadu's rapidly urbanizing cities face critical green-space deficits:
 
 ---
 
-## 🎯 Features
+## Features
 
 - **Real-time OSM Analysis** — Fetch live green-space data from OpenStreetMap (parks, trees, forests, gardens, meadows)
 - **Interactive Maps** — Canvas-based visualization with zone highlighting and heatmaps
@@ -64,28 +64,14 @@ Tamil Nadu's rapidly urbanizing cities face critical green-space deficits:
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
+## Quick Start (5 Minutes)
 
 ### Prerequisites
 - **Python:** 3.10 or Higher
 - **Node.js:** 16 or Higher  
 - **Git:** Latest version
 
-### Option A: Docker (Easiest)
-```bash
-# Clone repository
-git clone https://github.com/yourusername/greenspace_foss.git
-cd greenspace_foss
-
-# Build and run with Docker
-docker build -t greengrid:latest .
-docker run -p 8000:8000 greengrid:latest
-
-# Open browser
-# http://localhost:8000
-```
-
-### Option B: Local Development (Full Control)
+### Local Development (Full Control)
 ```bash
 # Clone repository
 git clone https://github.com/yourusername/greenspace_foss.git
@@ -184,7 +170,7 @@ python test_api.py
 
 ---
 
-## 🧠 Methodology
+## Methodology
 
 ### How It Works: Three-Step Process
 
@@ -375,7 +361,7 @@ curl "http://localhost:8000/analyze?place=Chennai%2C%20Tamil%20Nadu%2C%20India&c
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### System Architecture
 
@@ -583,7 +569,7 @@ DEMO_MODE=false              # Enable fallback demo data
 
 
 
-## 🎨 UI Components & Features
+## UI Components & Features
 
 ### Dashboard Components
 
@@ -610,15 +596,15 @@ DEMO_MODE=false              # Enable fallback demo data
 - Score rings: Sustainability metrics
 
 ### Accessibility Features
-- ♿ Keyboard navigation
-- 🎨 High contrast mode
-- 🌙 Dark/Light theme auto-detection
-- 📱 Mobile-responsive layout
-- ⌨️ Screen reader friendly (ARIA labels)
+- Keyboard navigation
+- High contrast mode
+- Dark/Light theme auto-detection
+- Mobile-responsive layout
+- Screen reader friendly (ARIA labels)
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Supported Cities
 
@@ -660,89 +646,7 @@ CACHE_TTL = 86400  # 24 hours in seconds
 
 ---
 
-## 🔍 Troubleshooting
-
-### Backend Issues
-
-**Issue: "ModuleNotFoundError: No module named 'osmnx'"**
-```bash
-# Solution: Use conda for geospatial packages
-conda activate greengrid
-mamba install -c conda-forge osmnx geopandas -y
-```
-
-**Issue: "Overpass API timeout"**
-```
-Reason: Heavy load or rate limiting
-Solution: 
-1. Wait 5 minutes and retry
-2. Use demo mode (graceful fallback)
-3. Cache results locally
-```
-
-**Issue: "Connection refused: localhost:8000"**
-```bash
-# Solution: Check if backend is running
-lsof -i :8000
-# Kill if stuck
-kill -9 <PID>
-# Restart backend
-uvicorn backend.app:app --reload --port 8000
-```
-
-### Frontend Issues
-
-**Issue: "Blank map / No data displayed"**
-```
-Reason: Backend not responding
-Solution:
-1. Check backend health: curl http://localhost:8000/health
-2. Check browser console for errors (F12)
-3. Restart frontend: npm run dev
-```
-
-**Issue: "npm install fails"**
-```bash
-# Solution: Clear cache and reinstall
-cd frontend
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**Issue: "High memory usage on large cities"**
-```
-Reason: Large geometry features
-Solution:
-1. Increase cell_size_m (e.g., 1000m instead of 500m)
-2. Run on server with more RAM
-3. Implement pagination in frontend
-```
-
-### OSM Data Issues
-
-**Issue: "No green spaces found for city"**
-```
-Reason: 
-1. OSM data incomplete for region
-2. Green features not tagged properly
-Solution:
-1. Check OSM data quality (openstreetmap.org)
-2. Use satellite data for validation
-3. Contribute missing data to OSM
-```
-
-**Issue: "Area calculations seem off"**
-```
-Reason: CRS projection differences
-Solution:
-1. Verify city boundaries are correct
-2. Check CRS is EPSG:3857 (Web Mercator)
-3. Compare with satellite imagery
-```
-
----
-
-## 📊 Performance Metrics
+## Performance Metrics
 
 ### Expected Performance
 
@@ -767,33 +671,12 @@ Hyderabad  | 2,654 parks  | 1.5s          | 9.8%
 
 ---
 
-## 🔮 Future Roadmap
-
-### Phase 1 (Q2 2026)
-- [ ] Satellite imagery integration (Sentinel-2, Landsat)
-- [ ] Population density overlays
-- [ ] CSV/PDF export functionality
-- [ ] API authentication & rate limiting
-
-### Phase 2 (Q3-Q4 2026)
-- [ ] Mobile app (React Native)
-- [ ] Multi-year trend tracking (heat maps)
-- [ ] Machine learning: Tree species classification
-- [ ] IoT sensor integration (temperature, air quality)
-
-### Phase 3 (2027)
-- [ ] Community verification system (crowdsourcing)
-- [ ] Carbon sequestration calculator
-- [ ] Integration with municipal planning systems
-- [ ] Multi-language support (Tamil, Kannada, Telugu)
-- [ ] Advanced SQL/PostGIS backend option
-
 ### Community Requests
 - Contribute to [GitHub Issues](https://github.com/yourusername/greenspace_foss/issues) for feature requests
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please follow this process:
 
@@ -832,11 +715,11 @@ git push origin feature/your-feature-name
 ```
 
 ### Contribution Guidelines
-- ✅ Follow PEP 8 (Python) and ESLint (JavaScript)
-- ✅ Add tests for new features
-- ✅ Update documentation
-- ✅ Keep commit messages clear and concise
-- ✅ No hardcoded sensitive data
+- Follow PEP 8 (Python) and ESLint (JavaScript)
+- Add tests for new features
+- Update documentation
+- Keep commit messages clear and concise
+- No hardcoded sensitive data
 
 ### Development Standards
 
@@ -858,22 +741,22 @@ const MetricsPanel = ({ metrics }) => {
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the **MIT License** — see [LICENSE](LICENSE) file for details.
 
 **You are free to:**
-- ✅ Use commercially
-- ✅ Modify the code
-- ✅ Distribute copies
-- ✅ Use privately
+- Use commercially
+- Modify the code
+- Distribute copies
+- Use privately
 
 **Under the condition that:**
-- 📝 License and copyright notice are included
+- License and copyright notice are included
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 ### Documentation
 - [API Docs (Swagger)](http://localhost:8000/docs) — Full endpoint documentation
@@ -892,20 +775,14 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE) fi
 
 ---
 
-## 👥 Team & Contact
-
-**Project Maintainers:**
-- 👤 [Your Name](https://github.com/yourusername)
-- 👤 [Contributor Name](https://github.com/contributor)
-
 **For questions or suggestions:**
-- 📧 Email: greengrid@domain.com
-- 💬 GitHub Discussions: [Project Discussions](https://github.com/yourusername/greenspace_foss/discussions)
-- 🐛 Report Bugs: [GitHub Issues](https://github.com/yourusername/greenspace_foss/issues)
+- Email: greengrid@domain.com
+- GitHub Discussions: [Project Discussions](https://github.com/yourusername/greenspace_foss/discussions)
+- Report Bugs: [GitHub Issues](https://github.com/yourusername/greenspace_foss/issues)
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **OpenStreetMap Community** — For open geospatial data
 - **FastAPI & React Teams** — For excellent frameworks
@@ -914,16 +791,9 @@ This project is licensed under the **MIT License** — see [LICENSE](LICENSE) fi
 
 ---
 
-## 📈 Project Stats
+## Project Stats
 
-- ⭐ Stars: [GitHub](https://github.com/yourusername/greenspace_foss)
-- 🍴 Forks: [GitHub](https://github.com/yourusername/greenspace_foss)
-- 📝 Contributors: 5+
-- 📅 Last Updated: March 2026
-
----
-
-**Built with ❤️ for sustainable urban development in Tamil Nadu**
-
-*Join us in building a greener future!* 🌱🌳🌲
-
+- Stars: [GitHub](https://github.com/yourusername/greenspace_foss)
+- Forks: [GitHub](https://github.com/yourusername/greenspace_foss)
+- Contributors: 5+
+- Last Updated: March 2026
